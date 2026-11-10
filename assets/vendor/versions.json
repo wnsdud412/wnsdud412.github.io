@@ -1,0 +1,14 @@
+[
+  {
+    "name": "marked",
+    "version": "18.2.0",
+    "integrity": "sha512-KaeL+tAbtvI930q7HE2PN5lYXYdT8EiSmxHlN6F3rsfb57wd5mp5W5TLazpdj4inTQBJdgjYwbs40W/0VUGU+Q==",
+    "source": "https://registry.npmjs.org/marked/-/marked-18.2.0.tgz"
+  },
+  {
+    "name": "dompurify",
+    "version": "3.4.17",
+    "integrity": "sha512-B/pSlYVHQ58kqISD/yDjuJ1yfzI34m1gF4lAod2bwSRhiN4K5Cl3H8Af7hqB2PmTL911tdEudnnXn5FnhRoz0w==",
+    "source": "https://registry.npmjs.org/dompurify/-/dompurify-3.4.17.tgz"
+  }
+]

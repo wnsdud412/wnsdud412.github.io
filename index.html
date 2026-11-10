@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="대화에서 시작한 생각과 배운 것을 정리하는 wnsdud412의 블로그.">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data: https:; connect-src 'self'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <meta name="color-scheme" content="light dark">
+  <title>기록 — wnsdud412</title>
+  <link rel="icon" href="assets/favicon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="assets/styles.css">
+  <script src="assets/site.js" type="module"></script>
+  <script src="assets/home.js" type="module"></script>
+</head>
+<body>
+  <a class="skip-link" href="#main">본문으로 바로가기</a>
+  <header class="site-header shell">
+    <a class="brand" href="./" aria-label="기록, 홈"><span class="brand-mark" aria-hidden="true"></span>기록<span class="brand-owner">wnsdud412</span></a>
+    <nav aria-label="주 메뉴"><a href="./" aria-current="page">글</a><a href="about.html">소개</a><a href="private/" class="private-nav">개인 악보<span aria-hidden="true">↗</span></a><button class="theme-toggle" type="button" aria-label="어두운 화면으로 바꾸기" title="화면 테마 변경">◐</button></nav>
+  </header>
+  <main id="main" class="shell">
+    <section class="intro" aria-labelledby="intro-title">
+      <p class="eyebrow"><span class="accent-dot" aria-hidden="true"></span> A PERSONAL JOURNAL</p>
+      <h1 id="intro-title">대화에서 시작해,<br>글로 남기는 생각.</h1>
+      <p class="intro-copy">궁금했던 것, 새롭게 배운 것, 오래 기억하고 싶은 것.<br class="desktop-break"> 하나씩 정리해 이곳에 남깁니다.</p>
+      <span class="intro-rule" aria-hidden="true"></span>
+    </section>
+    <section class="journal-grid" aria-label="블로그 글 목록">
+      <aside class="index-sidebar"><p class="eyebrow">INDEX</p><div id="categories" class="category-list" aria-label="주제별 글"><button class="category-button active" type="button" data-category="all" aria-pressed="true"><span>전체 글</span><span class="category-count">0</span></button></div><p class="sidebar-note">생각을 정리하는<br>작은 기록장.</p></aside>
+      <div class="journal-main">
+        <div class="list-toolbar"><h2 id="list-title">모든 글 <span id="post-count" class="muted-count">0</span></h2><label class="search-field"><span aria-hidden="true">⌕</span><input id="search" type="search" placeholder="글 찾기" aria-label="제목, 요약, 태그로 글 찾기" autocomplete="off"></label></div>
+        <p id="list-status" class="sr-only" aria-live="polite"></p>
+        <div id="post-list" class="post-list"></div>
+        <div id="empty-state" class="empty-state"><span class="empty-mark" aria-hidden="true">✎</span><h3>아직 발행된 글이 없습니다.</h3><p>새로운 기록이 이곳에 차곡차곡 모입니다.</p></div>
+        <noscript><p class="notice">글 목록을 보려면 브라우저에서 JavaScript를 허용해 주세요.</p></noscript>
+      </div>
+    </section>
+  </main>
+  <footer class="site-footer shell"><p>© <span data-year>2026</span> wnsdud412</p><p>조금씩, 꾸준히 기록하기.</p><a href="https://github.com/wnsdud412/wnsdud412.github.io" target="_blank" rel="noopener noreferrer">GitHub ↗</a></footer>
+</body>
+</html>
