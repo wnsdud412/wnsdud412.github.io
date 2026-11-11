@@ -1,1 +1,15 @@
-[]
+[
+  {
+    "slug": "ai-model-precautions",
+    "title": "[괴담] AI 모델 이용 시 주의사항",
+    "date": "2026-11-11",
+    "path": "content/posts/ai-model-precautions.md",
+    "url": "posts/ai-model-precautions/",
+    "summary": "본 안내문은 존재하지 않는 모델에 대한 대응 지침입니다.",
+    "category": "괴담",
+    "tags": [
+      "나폴리탄",
+      "AI"
+    ]
+  }
+]
