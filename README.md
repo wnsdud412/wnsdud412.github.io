@@ -29,7 +29,7 @@ tags: ["생각", "배움"]
 - 지원: Markdown 메모, PDF, PNG/JPEG/WebP/GIF 이미지
 - Markdown의 상대 이미지 경로와 다른 악보 파일 링크 지원
 - 연결 후 GitHub API에서 파일을 직접 읽고 브라우저 메모리에서 표시
-- 토큰은 메모리에만 유지. URL, 쿠키, localStorage, sessionStorage, IndexedDB, 서비스 워커에 저장하지 않음
+- 연결에 성공한 토큰은 이 브라우저의 localStorage에 저장하고 다음 방문에 자동 연결. 연결 해제 시 삭제하며, 만료되거나 취소된 토큰으로 인증이 거절되면 다시 입력
 - 연결 해제 또는 페이지 이탈 시 요청 중단, 화면 제거, 캐시 초기화, 생성한 Blob URL 폐기
 - 비공개 파일의 영구 공개 URL 생성이나 공개 저장소로의 자동 복사 없음
 

@@ -1,4 +1,4 @@
-import { GitHubLibrary } from './library.js?v=2';
+import { GitHubLibrary } from './library.js?v=3';
 import { fileKind, parseFrontMatter } from './core.js';
 import { markdownFragment } from './markdown.js?v=2';
 const library = new GitHubLibrary();
@@ -12,8 +12,17 @@ const libraryPanel = document.querySelector('#library-panel');
 const viewer = document.querySelector('#viewer');
 const fileList = document.querySelector('#file-list');
 const search = document.querySelector('#file-search');
+const TOKEN_STORAGE_KEY = 'journal-private-tabs-token';
 let files = []; let selected = ''; let viewVersion = 0; let connectionVersion = 0;
 const objectUrls = new Set();
+function readSavedToken() {
+  try { return localStorage.getItem(TOKEN_STORAGE_KEY) || ''; }
+  catch { return ''; }
+}
+function forgetToken() {
+  try { localStorage.removeItem(TOKEN_STORAGE_KEY); return true; }
+  catch { return false; }
+}
 function message(text, error = false) { status.textContent = text; status.classList.toggle('error-text', error); }
 function placeholder() {
   viewer.replaceChildren();
@@ -27,7 +36,7 @@ function reset({ notice = '' } = {}) {
   connectionVersion++; viewVersion++; library.clear();
   for (const url of objectUrls) URL.revokeObjectURL(url);
   objectUrls.clear(); files = []; selected = ''; input.value = ''; search.value = ''; fileList.replaceChildren(); viewer.replaceChildren();
-  connectPanel.hidden = false; libraryPanel.hidden = true; disconnectButton.hidden = true;
+  connectPanel.hidden = false; libraryPanel.hidden = true; disconnectButton.hidden = !readSavedToken();
   document.querySelector('#connection-label').textContent = '연결되지 않음'; document.querySelector('#connection-dot').classList.remove('connected');
   connectButton.disabled = false; connectButton.textContent = '연결하기 →'; input.disabled = false;
   message(notice);
@@ -84,9 +93,8 @@ async function openFile(path) {
     viewer.replaceChildren(); message(error.message || '자료를 불러오지 못했습니다.', true);
   }
 }
-form.addEventListener('submit', async event => {
-  event.preventDefault();
-  const token = input.value.trim(); input.value = ''; input.disabled = true; connectButton.disabled = true;
+async function connect(token, { saveToken = true } = {}) {
+  input.value = ''; input.disabled = true; connectButton.disabled = true; disconnectButton.hidden = false;
   const version = ++connectionVersion;
   message('비공개 보관함에 연결하고 있습니다.');
   try {
@@ -94,15 +102,39 @@ form.addEventListener('submit', async event => {
     if (version !== connectionVersion) return;
     connectPanel.hidden = true; libraryPanel.hidden = false; disconnectButton.hidden = false;
     document.querySelector('#connection-label').textContent = '연결됨 · 읽기 전용'; document.querySelector('#connection-dot').classList.add('connected');
-    renderFiles(); placeholder(); message('');
+    renderFiles(); placeholder();
+    message('');
+    if (saveToken) {
+      try { localStorage.setItem(TOKEN_STORAGE_KEY, token); }
+      catch { message('연결됐지만 브라우저가 토큰 저장을 허용하지 않아 다음 방문에 다시 입력해야 합니다.'); }
+    }
   } catch (error) {
     if (version !== connectionVersion) return;
+    if (error.code === 'invalid-token' && readSavedToken() === token) forgetToken();
     reset(); message(error.name === 'AbortError' ? '연결이 취소되었습니다.' : error.message, true); input.focus();
   }
+}
+function restoreConnection() {
+  const token = readSavedToken();
+  if (token) void connect(token, { saveToken: false });
+}
+form.addEventListener('submit', event => {
+  event.preventDefault();
+  void connect(input.value.trim());
 });
-disconnectButton.addEventListener('click', () => { reset({ notice: '연결을 해제했습니다. 불러온 자료와 토큰을 지웠습니다.' }); input.focus(); });
+disconnectButton.addEventListener('click', () => {
+  const removed = forgetToken();
+  reset({ notice: removed ? '연결을 해제하고 저장된 토큰을 삭제했습니다.' : '연결을 해제했습니다. 브라우저 저장소에 접근할 수 없어 저장된 토큰을 삭제하지 못했습니다.' });
+  input.focus();
+});
 search.addEventListener('input', renderFiles);
 fileList.addEventListener('click', event => { const button = event.target.closest('button[data-path]'); if (button) void openFile(button.dataset.path); });
 viewer.addEventListener('click', event => { const link = event.target.closest('a[data-private-file]'); if (link) { event.preventDefault(); void openFile(link.dataset.privateFile); } });
 window.addEventListener('pagehide', () => reset());
-window.addEventListener('pageshow', event => { if (event.persisted) reset(); });
+window.addEventListener('pageshow', event => { if (event.persisted) { reset(); restoreConnection(); } });
+window.addEventListener('storage', event => {
+  if (event.storageArea !== localStorage || (event.key !== TOKEN_STORAGE_KEY && event.key !== null)) return;
+  reset();
+  restoreConnection();
+});
+restoreConnection();

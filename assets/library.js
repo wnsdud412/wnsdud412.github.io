@@ -1,7 +1,12 @@
 import { safeRepoPath, fileKind } from './core.js';
 const API = 'https://api.github.com';
 const MAX_FILE_SIZE = 50 * 1024 * 1024;
-export class LibraryError extends Error {}
+export class LibraryError extends Error {
+  constructor(message, code) {
+    super(message);
+    this.code = code;
+  }
+}
 
 export class GitHubLibrary {
   #token = ''; #controller; #files = []; #cache = new Map(); #epoch = 0;
@@ -28,7 +33,7 @@ export class GitHubLibrary {
     }
     if (epoch !== this.#epoch) throw new DOMException('연결이 해제되었습니다.', 'AbortError');
     if (!response.ok) {
-      if (response.status === 401) throw new LibraryError('토큰이 올바르지 않거나 만료되었습니다. 다시 연결해 주세요.');
+      if (response.status === 401) throw new LibraryError('토큰이 올바르지 않거나 만료되었습니다. 다시 연결해 주세요.', 'invalid-token');
       if (response.status === 403) throw new LibraryError('읽기 권한이 없거나 요청 한도에 도달했습니다. 토큰의 Contents 읽기 권한을 확인해 주세요.');
       if (response.status === 404 || response.status === 409) throw new LibraryError('파일을 찾을 수 없습니다. 저장소 선택과 읽기 권한을 확인해 주세요.');
       throw new LibraryError('자료를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
@@ -37,7 +42,7 @@ export class GitHubLibrary {
   }
   async connect(token) {
     this.clear();
-    if (typeof token !== 'string' || token.trim().length < 16 || token.length > 300 || /\s/.test(token.trim())) throw new LibraryError('접근 토큰을 다시 확인해 주세요.');
+    if (typeof token !== 'string' || token.trim().length < 16 || token.length > 300 || /\s/.test(token.trim())) throw new LibraryError('접근 토큰을 다시 확인해 주세요.', 'invalid-token');
     this.#token = token.trim(); this.#controller = new AbortController();
     const attempt = this.#epoch;
     try {

@@ -61,18 +61,24 @@ test('the default fetch uses the browser global as its receiver', async context 
 });
 test('revoked or invalid credentials do not expose raw server messages', async () => {
   const client = new GitHubLibrary({ fetcher: async () => new Response(`server debug ${TEST_TOKEN}`, { status: 401 }) });
-  await assert.rejects(client.connect(TEST_TOKEN), error => /토큰/.test(error.message) && !error.message.includes(TEST_TOKEN));
+  await assert.rejects(client.connect(TEST_TOKEN), error => error.code === 'invalid-token' && /토큰/.test(error.message) && !error.message.includes(TEST_TOKEN));
   await assert.rejects(client.readFile('score.pdf'));
+});
+
+test('malformed credentials can be distinguished from temporary connection failures', async () => {
+  const client = new GitHubLibrary({ fetcher: async () => { throw new TypeError('Test network failure'); } });
+  await assert.rejects(client.connect('short'), error => error.code === 'invalid-token');
+  await assert.rejects(client.connect(TEST_TOKEN), error => error.code !== 'invalid-token' && /GitHub/.test(error.message));
 });
 test('disconnect during a pending request cannot restore a stale session', async () => {
   let resolveRequest; const client = new GitHubLibrary({ fetcher: () => new Promise(resolve => { resolveRequest = resolve; }) });
   const request = client.connect(TEST_TOKEN); client.clear(); resolveRequest(json({ private: true, default_branch: 'main' }));
   await assert.rejects(request, error => error.name === 'AbortError'); assert.deepEqual(client.files, []);
 });
-test('viewer source never persists credentials and all executable assets are local', async () => {
+test('viewer credentials avoid cookies and logs and all executable assets are local', async () => {
   for (const file of ['private.js', 'library.js']) {
     const source = await readFile(new URL(`../assets/${file}`, import.meta.url), 'utf8');
-    assert.ok(!/localStorage|sessionStorage|indexedDB|document\.cookie|console\.(?:log|error|debug)/.test(source), file);
+    assert.ok(!/sessionStorage|indexedDB|document\.cookie|console\.(?:log|error|debug)/.test(source), file);
   }
   const html = await readFile(new URL('../private/index.html', import.meta.url), 'utf8');
   assert.ok(html.includes("connect-src https://api.github.com")); assert.ok(html.includes("img-src blob: data:")); assert.ok(!/src="https?:/.test(html));
