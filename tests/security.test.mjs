@@ -49,6 +49,16 @@ test('a public repository is rejected before any private file is requested', asy
   let calls = 0; const client = new GitHubLibrary({ fetcher: async () => { calls++; return json({ private: false }); } });
   await assert.rejects(client.connect(TEST_TOKEN), /비공개/); assert.equal(calls, 1); assert.equal(client.files.length, 0);
 });
+test('the default fetch uses the browser global as its receiver', async context => {
+  context.mock.method(globalThis, 'fetch', async function (url) {
+    assert.equal(this, globalThis);
+    if (url.endsWith('/private-tabs')) return json({ private: true, default_branch: 'main' });
+    return json({ tree: [] });
+  });
+
+  const client = new GitHubLibrary();
+  assert.deepEqual(await client.connect(TEST_TOKEN), []);
+});
 test('revoked or invalid credentials do not expose raw server messages', async () => {
   const client = new GitHubLibrary({ fetcher: async () => new Response(`server debug ${TEST_TOKEN}`, { status: 401 }) });
   await assert.rejects(client.connect(TEST_TOKEN), error => /토큰/.test(error.message) && !error.message.includes(TEST_TOKEN));

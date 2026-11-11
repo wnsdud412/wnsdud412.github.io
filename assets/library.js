@@ -6,7 +6,7 @@ export class LibraryError extends Error {}
 export class GitHubLibrary {
   #token = ''; #controller; #files = []; #cache = new Map(); #epoch = 0;
   #fetch; #prefix;
-  constructor({ owner = 'wnsdud412', repo = 'private-tabs', fetcher = globalThis.fetch } = {}) {
+  constructor({ owner = 'wnsdud412', repo = 'private-tabs', fetcher = globalThis.fetch.bind(globalThis) } = {}) {
     if (!/^[\w-]+$/.test(owner) || !/^[\w.-]+$/.test(repo)) throw new LibraryError('저장소 설정이 올바르지 않습니다.');
     this.#fetch = fetcher;
     this.#prefix = `/repos/${encodeURIComponent(owner)}/${encodeURIComponent(repo)}`;
