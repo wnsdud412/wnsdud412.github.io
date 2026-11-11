@@ -1,6 +1,6 @@
 import { GitHubLibrary } from './library.js?v=2';
 import { fileKind, parseFrontMatter } from './core.js';
-import { markdownFragment } from './markdown.js';
+import { markdownFragment } from './markdown.js?v=2';
 const library = new GitHubLibrary();
 const form = document.querySelector('#connect-form');
 const input = document.querySelector('#access-token');
@@ -75,7 +75,7 @@ async function openFile(path) {
     } else {
       const url = asUrl(buffer, path);
       const open = document.createElement('a'); open.href = url; open.target = '_blank'; open.rel = 'noopener noreferrer'; open.textContent = '새 탭에서 보기 ↗'; heading.append(open);
-      if (fileKind(path) === 'PDF') { const frame = document.createElement('iframe'); frame.className = 'pdf-frame'; frame.title = '개인 악보 PDF'; frame.referrerPolicy = 'no-referrer'; frame.src = url; const hint = document.createElement('p'); hint.className = 'field-note'; hint.textContent = 'PDF가 보이지 않으면 위의 ‘새 탭에서 보기’를 이용해 주세요.'; viewer.append(frame, hint); }
+      if (fileKind(path) === 'PDF') { const frame = document.createElement('iframe'); frame.className = 'pdf-frame'; frame.title = '개인 악보 PDF'; frame.referrerPolicy = 'no-referrer'; frame.src = `${url}#view=FitH`; const hint = document.createElement('p'); hint.className = 'field-note'; hint.textContent = 'PDF가 보이지 않으면 위의 ‘새 탭에서 보기’를 이용해 주세요.'; viewer.append(frame, hint); }
       else { const image = document.createElement('img'); image.className = 'score-image'; image.alt = path.split('/').at(-1); image.src = url; viewer.append(image); }
     }
     if (version === viewVersion && connection === connectionVersion) message('');
