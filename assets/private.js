@@ -1,4 +1,4 @@
-import { GitHubLibrary } from './library.js';
+import { GitHubLibrary } from './library.js?v=2';
 import { fileKind, parseFrontMatter } from './core.js';
 import { markdownFragment } from './markdown.js';
 const library = new GitHubLibrary();
