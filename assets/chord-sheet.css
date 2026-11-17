@@ -65,9 +65,19 @@
   }
 }
 
-@container (min-width: 800px) {
+@container (min-width: 600px) {
   .chord-sheet-systems {
     grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+
+  .prose .chord-sheet td {
+    padding-inline: 2px;
+    font-size: clamp(11px, 1.8cqi, 14px);
+  }
+
+  .prose .chord-sheet .lyric-row td {
+    padding-inline: 0;
+    font-size: clamp(11px, 1.65cqi, 12.5px);
   }
 }
 
@@ -100,7 +110,7 @@
   min-height: 320px;
 }
 
-@media (max-width: 1000px) {
+@media (max-width: 1200px) {
   .private-page .library-grid {
     grid-template-columns: minmax(0, 1fr);
     gap: 24px;
