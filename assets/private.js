@@ -1,6 +1,6 @@
 import { GitHubLibrary } from './library.js?v=3';
 import { fileKind, parseFrontMatter } from './core.js';
-import { markdownFragment } from './markdown.js?v=3';
+import { markdownFragment } from './markdown.js?v=4';
 const library = new GitHubLibrary();
 const form = document.querySelector('#connect-form');
 const input = document.querySelector('#access-token');

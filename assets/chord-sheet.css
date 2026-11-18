@@ -69,21 +69,6 @@
   white-space: pre-wrap;
 }
 
-.lyric-beat {
-  margin-inline: 0.5em 0.2em;
-  color: var(--muted);
-  font-size: 0.72em;
-  font-weight: 600;
-  line-height: 0;
-  vertical-align: super;
-  white-space: nowrap;
-  user-select: none;
-}
-
-.lyric-cue:first-child > .lyric-beat {
-  margin-inline-start: 0;
-}
-
 :root[data-theme="dark"] .prose .chord-sheet .chord-row td {
   color: #a9baff;
 }

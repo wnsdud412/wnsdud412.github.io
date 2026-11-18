@@ -2,41 +2,14 @@ import { marked } from './vendor/marked.js';
 import DOMPurify from './vendor/purify.js';
 import { parseFrontMatter, resolveRepoReference, fileKind } from './core.js';
 
-// Keep each source fragment once, in reading order, with its original beat position.
-export function measureLyricCues(lyricCells, chordCells, start, end) {
-  const beats = [];
-  let position = 0;
-  for (const cell of chordCells) {
-    if (position >= start && position < end) beats.push({ start: position, columns: cell.colSpan });
-    position += cell.colSpan;
-  }
-
+// Keep each source fragment once, in reading order, without adding annotations.
+export function measureLyricCues(lyricCells, start, end) {
   const cues = [];
-  let markedBeat = -1;
-  position = 0;
+  let position = 0;
   for (const [index, cell] of lyricCells.entries()) {
     // A cell spanning a bar line belongs to the bar where its text begins.
     if (position >= start && position < end && (cell.textContent || cell.childElementCount)) {
-      const beat = beats.findIndex(value => position >= value.start && position < value.start + value.columns);
-      let label = '';
-      let description = '';
-      if (beat >= 0) {
-        let numerator = position - beats[beat].start;
-        let denominator = beats[beat].columns;
-        if (numerator) {
-          let a = numerator; let b = denominator;
-          while (b) { const remainder = a % b; a = b; b = remainder; }
-          numerator /= a; denominator /= a;
-        }
-        const fraction = `${numerator}/${denominator}`;
-        const symbols = { '1/2': '½', '1/3': '⅓', '2/3': '⅔', '1/4': '¼', '3/4': '¾' };
-        label = `${beat + 1}${numerator ? symbols[fraction] || `+${fraction}` : ''}`;
-        description = `${beat + 1}박${numerator ? ` + ${fraction}박` : ''}`;
-      }
-      const hasWords = /\S/.test(cell.textContent) || cell.childElementCount > 0;
-      const showBeat = hasWords && beat >= 0 && beat !== markedBeat;
-      cues.push({ index, beatLabel: showBeat ? label : '', positionLabel: description });
-      if (hasWords) markedBeat = beat;
+      cues.push({ index });
     }
     position += cell.colSpan;
   }
@@ -97,22 +70,11 @@ function fitChordSheets(fragment) {
         const flow = document.createElement('td');
         flow.className = 'lyric-flow';
         flow.colSpan = end - start;
-        for (const cue of measureLyricCues([...lyricRow.cells], [...chordRow.cells], start, end)) {
-          const phrase = document.createElement('span');
-          phrase.className = 'lyric-cue';
-          phrase.title = cue.positionLabel;
-          if (cue.beatLabel) {
-            const marker = document.createElement('span');
-            marker.className = 'lyric-beat';
-            marker.textContent = cue.beatLabel;
-            marker.setAttribute('aria-label', cue.positionLabel);
-            phrase.append(marker);
-          }
+        for (const cue of measureLyricCues([...lyricRow.cells], start, end)) {
           const text = document.createElement('span');
           text.className = 'lyric-text';
           text.append(...[...lyricRow.cells[cue.index].childNodes].map(node => node.cloneNode(true)));
-          phrase.append(text);
-          flow.append(phrase);
+          flow.append(text);
         }
         lyrics.append(flow);
         body.append(chords, lyrics);
@@ -131,7 +93,7 @@ function fitChordSheets(fragment) {
       if (!guideAdded) {
         const guide = document.createElement('p');
         guide.className = 'chord-sheet-guide';
-        guide.textContent = '가사는 마디별로 위→아래 · 작은 숫자는 시작 박';
+        guide.textContent = '가사는 마디별로 위→아래';
         table.before(guide);
         guideAdded = true;
       }
